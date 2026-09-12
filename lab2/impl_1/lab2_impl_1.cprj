@@ -1,0 +1,8 @@
+-ver "C:/lscc/radiant/2026.1/ip/pmi/pmi_iCE40UP.v"
+-lib pmi -vhd "C:/lscc/radiant/2026.1/ip/pmi/pmi_iCE40UP.vhd"
+-sver "C:/Users/estgonzalez/my_designs/lab2/source/impl_1/top.sv" "C:/Users/estgonzalez/my_designs/lab2/source/impl_1/seven_segment.sv" "C:/Users/estgonzalez/my_designs/lab2/source/impl_1/scanning.sv" "C:/Users/estgonzalez/my_designs/lab2/source/impl_1/counter.sv"
+-path "C:/Users/estgonzalez/my_designs/lab2" "C:/Users/estgonzalez/my_designs/lab2"
+-top top
+-isTop
+-a "iCE40UP"
+-t "iCE40UP5K"
