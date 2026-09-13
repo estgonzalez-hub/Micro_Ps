@@ -33,7 +33,7 @@ module counter #(
 					    counter <= counter + 1;
 				  end
 			else begin
-						counter <= counter;	
+						counter <= counter;
 		end 
 	end
 endmodule 

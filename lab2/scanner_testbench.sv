@@ -62,6 +62,7 @@ module scanning_testbench();
        #500;
 	   
 	    reset = 0;
+		#500;
 		enable = 1;
 			assert (rows == 4'b0000)
             $display("PASSED! rows resets low at time: %0t.", $time);
