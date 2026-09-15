@@ -1,3 +1,7 @@
+//Esteban Gonzalez 9/11/2026
+//estgonzalez@g.hmc.edu
+//Top module that instantiates all the modules.
+
 module top(
         input  logic [3:0] s0,
         input  logic [3:0] s1, 
@@ -14,7 +18,7 @@ module top(
         logic int_osc; 
         logic sel;
         logic [3:0] dip_switch;
-        logic [1:0] matrix_sel;
+        
         
         //Internal high-speed oscillator 
         HSOSC #(.CLKHF_DIV(2'b01))
@@ -23,10 +27,10 @@ module top(
         
         //Instantiating modules 
         counter #(.width(21), .max(200000), .outWidth(1)) segment_time (.clk  (int_osc),  .reset (1'b0), .enable (1'b1), .out (sel));
-        counter #(.width(22), .max(3000000), .outWidth(2)) matrix_time(.clk  (int_osc),  .reset (reset), .enable (enable), .out (matrix_sel));
+      
         
         seven_segment  display(.s (dip_switch), .seg (seg)); 
-        scanning scanner(.sel (matrix_sel), .reset (reset), .enable(enable), .rows (row));
+        scanning scanner(.clk (int_osc),  .reset (reset), .enable(enable), .rows (row));
         
         //Assign statements to implement the multiplexing and scanning 
         assign dip_switch = sel ? s0 : s1;

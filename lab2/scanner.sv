@@ -1,23 +1,35 @@
-module scanning(
-	input   logic [1:0] sel,
+//Esteban Gonzalez 9/11/2026
+//estgonzalez@g.hmc.edu
+//Scanning module for e155 lab 2. Keeps track of the state we are in when pressing the keypad. 
+
+module scanning#(
+	parameter int width = 22,
+	parameter int max = 3000000)(
+	input 	logic  clk,
 	input   logic reset,
 	input   logic enable,
 	output 	logic [3:0] rows
 	
 	);
-	
+	//Instantiating Clock 
+	  logic [1:0] sel;
+	  counter #(.width(width), .max(max), .outWidth(2)) matrix_time(.clk  (clk),  .reset (reset), .enable (enable), .out (sel));
+	  
+	  
+	  
+	//Logic for led to blink 
 	always_comb begin 
-		 rows = 4'b1111;
+		 rows = 4'b0000;
 	if (reset) begin 
-		 rows = 4'b1111;
+		 rows = 4'b0000;
 	end
 	else if (enable) begin
 		case(sel)
-				2'b00:   rows = 4'b1110;
-				2'b01:   rows = 4'b1101;
-				2'b10:   rows = 4'b1011;
-				2'b11:   rows = 4'b0111;
-				default: rows = 4'b1111;
+				2'b00:   rows = 4'b0001;
+				2'b01:   rows = 4'b0010;
+				2'b10:   rows = 4'b0100;
+				2'b11:   rows = 4'b1000;
+				default: rows = 4'b0000;
 		endcase
 	end 
 end
