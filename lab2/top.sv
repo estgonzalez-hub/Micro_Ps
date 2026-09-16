@@ -26,7 +26,7 @@ module top(
             
         
         //Instantiating modules 
-        counter #(.width(21), .max(200000), .outWidth(1)) segment_time (.clk  (int_osc),  .reset (1'b0), .enable (1'b1), .out (sel));
+        counter #(.width(21), .max(200000)) segment_time (.clk  (int_osc),  .reset (1'b0), .enable (1'b1), .counter (sel));
       
         
         seven_segment  display(.s (dip_switch), .seg (seg)); 
@@ -34,8 +34,8 @@ module top(
         
         //Assign statements to implement the multiplexing and scanning 
         assign dip_switch = sel ? s0 : s1;
-        assign c1 = sel ? 1 : 0;
-        assign c2 = sel ? 0 : 1; 
+        assign c1 = sel;
+        assign c2 = ~sel; 
         
         assign led[0] = ~cols[0];
         assign led[1] = ~cols[1];
