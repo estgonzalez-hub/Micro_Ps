@@ -1,3 +1,7 @@
+//Esteban Gonzalez 9/20/2026
+//estgonzalez@g.hmc.edu
+//Debounce module for e155 lab 3. Takes a bouncing signal and doesnensures the input is steady before signifying that the input is pressed.
+
 module debounce#(
 parameter int width = 20,
 parameter int stable = 524_288)(

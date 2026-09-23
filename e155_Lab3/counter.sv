@@ -1,3 +1,7 @@
+//Esteban Gonzalez 9/20/2026
+//estgonzalez@g.hmc.edu
+//Counter module for e155 lab 3. Can set its width or maximum to change to the frequency that is desired.
+
 module counter #(
 //Set the paremeters depending on the module needing it
 parameter int width = 2,

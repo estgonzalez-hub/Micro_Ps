@@ -1,3 +1,7 @@
+//Esteban Gonzalez 9/20/2026
+//estgonzalez@g.hmc.edu
+//Seven_segment module for e155 lab 3. Combinational logic where it takes switch inputs and generates
+//the corresponding hexadecimal on the segment display.
 module seven_segment(
 input logic [3:0] s,
 output logic [6:0] seg

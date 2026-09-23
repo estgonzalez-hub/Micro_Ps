@@ -1,3 +1,7 @@
+//Esteban Gonzalez 9/20/2026
+//estgonzalez@g.hmc.edu
+//synchronize module for e155 lab 3. Takes asynchounous input and outputs a synchrnous signal. 
+
 module synchronizer#(
     //Set the paremeters depending on the module needing it
     parameter int width = 4

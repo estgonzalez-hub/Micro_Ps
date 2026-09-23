@@ -1,3 +1,7 @@
+//Esteban Gonzalez 9/20/2026
+//estgonzalez@g.hmc.edu
+//Scanning module for e155 lab 3. Continously scans the rows of the keypad, and freezes on the row of the input. 
+
 module scanning#(
 parameter int width = 22,
 parameter int max = 300_000)(

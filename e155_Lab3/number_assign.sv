@@ -1,3 +1,8 @@
+//Esteban Gonzalez 9/20/2026
+//estgonzalez@g.hmc.edu
+//number_assign module for e155 lab 3. This is the module that assigns the hexadecimal digit to an input of 
+//rows and coloumns
+
 module number_assign(
       input  logic [3:0] rows,
       input  logic [3:0] cols,

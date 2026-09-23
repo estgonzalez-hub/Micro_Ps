@@ -1,3 +1,8 @@
+//Esteban Gonzalez 9/20/2026
+//estgonzalez@g.hmc.edu
+//key_press module for e155 lab 3. This is the fsm module for the key press, ensuring it meets the specs 
+//of only one press being read at a time. 
+
 module key_press(
   input  logic clk,
   input  logic reset,
@@ -17,11 +22,6 @@ statetype state, nextstate;
         assign key_before = (cols_inv != 4'b0000) && ((cols_inv & (cols_inv - 1)) == 4'b0000);
 
 
-
-
-//debounce ibounce(.clk (clk), .reset(reset), .p(key_before), .debounced_p(key));
-//counter#(.width(tick_width), .max(tick_max)) tick(.clk (clk), .reset(reset), .enable(1'b1), .counter (tick_count));
-//assign scan_tick = (tick_count == tick_max -1);
 
 logic [3:0] keys;
 

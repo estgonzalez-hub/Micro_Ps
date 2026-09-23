@@ -1,3 +1,8 @@
+//Esteban Gonzalez 9/20/2026
+//estgonzalez@g.hmc.edu
+//Top module for e155 lab 3. Runs all the modules together to make a seven segment display
+//hexadecimal numbers from the inputs of a 4x4 matrix keypad. 
+
 module top(
         input  logic       reset,
         input  logic       enable,
