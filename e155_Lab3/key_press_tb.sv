@@ -7,14 +7,13 @@ module key_press_tb();
     logic [3:0] cols;
     logic [3:0] rows;
     logic       debounced_key;
-    logic       debounce_idle;
     logic       scan_enable;
     logic [3:0] d0;
     logic [3:0] d1;
 
     key_press dut (
         .clk(clk), .reset(reset), .cols(cols), .rows(rows),
-        .debounced_key(debounced_key), .debounce_idle(debounce_idle),
+        .debounced_key(debounced_key),
         .scan_enable(scan_enable), .d0(d0), .d1(d1)
     );
 
@@ -24,92 +23,113 @@ module key_press_tb();
     end
 
     initial begin
-        clk = 0; #5;
-        clk = 1; #5;
-    end
-
-    // Testing Sequence
-    initial begin
-        // Step 1: Test Reset State
+        // 
         reset         = 1;
-        cols          = 4'b1111; // No key pressed (active low)
+        cols          = 4'b1111;
         rows          = 4'b1110;
         debounced_key = 0;
-        debounce_idle = 1;
         #10; #1;
         assert (d0 == 4'b0000 && d1 == 4'b0000 && scan_enable == 1'b1)
             $display("PASSED! Reset to SCAN, d0=0, d1=0, scan_enable=1 at %0t.", $time);
         else $error("FAILED! Reset state incorrect at %0t.", $time);
 
         reset = 0;
-        #10;
+        #10; #1;
 
-        // ---- Step 2: Key press detected (row0/col0 -> should decode "1") ----
-        cols = 4'b1110;   // col 0 active
-        debounce_idle = 0;
-        #5; #1;
+        // 
+        cols = 4'b1111;
+        @(posedge clk); #1;
+        cols = 4'b1110;
+        #10; #1;
         assert (scan_enable == 1'b0)
-            $display("PASSED! Key press detected, scan_enable paused low at %0t.", $time);
-        else $error("FAILED! scan_enable did not disable on key press at %0t.", $time);
+            $display("PASSED! scan_enable reacts to one-hot col press, offset=1ns at %0t.", $time);
+        else $error("FAILED! scan_enable incorrect, offset=1ns at %0t.", $time);
 
-        // ---- Step 3: Debounce confirms -> SCAN->PRESS->HOLD, d0 gets real decode ----
+        cols = 4'b1111; #10; #1;
+
+        //
+        @(posedge clk);
+        cols = 4'b1101;
+        #10; #1;
+        assert (scan_enable == 1'b0)
+            $display("PASSED! scan_enable reacts correctly to edge-coincident col change at %0t.", $time);
+        else $error("FAILED! scan_enable incorrect for edge-coincident change at %0t.", $time);
+
+        cols = 4'b1111; #10; #1;
+
+        // 
+        @(posedge clk); #9;
+        cols = 4'b1011;
+        #10; #1;
+        assert (scan_enable == 1'b0)
+            $display("PASSED! scan_enable reacts correctly, offset=9ns at %0t.", $time);
+        else $error("FAILED! scan_enable incorrect, offset=9ns at %0t.", $time);
+
+        cols = 4'b1111; #10; #1;
+
+        // 
+        #7  cols = 4'b1110;
+        #2  cols = 4'b1111;
+        #3  cols = 4'b1110;
+        #1  cols = 4'b1111;
+        #4  cols = 4'b1110;
+        #6  cols = 4'b1111;
+        #2  cols = 4'b1110;   
+        #10; #1;
+        assert (scan_enable == 1'b0)
+            $display("PASSED! scan_enable correctly low after bounce settles pressed at %0t.", $time);
+        else $error("FAILED! scan_enable incorrect after bounce settle at %0t.", $time);
+
+        cols = 4'b1111; #10; #1;
+        assert (scan_enable == 1'b1)
+            $display("PASSED! scan_enable returns high at idle after bounce test at %0t.", $time);
+        else $error("FAILED! scan_enable did not return high at idle at %0t.", $time);
+
+        // 
+        cols = 4'b1100;   
+        #10; #1;
+        assert (scan_enable == 1'b1)
+            $display("PASSED! Multi-key press (non-one-hot) correctly ignored, scan_enable stays high at %0t.", $time);
+        else $error("FAILED! scan_enable reacted to a non-one-hot (multi-key) cols pattern at %0t.", $time);
+
+        // release down to a single key -> should now register
+        cols = 4'b1110;
+        #1;
+        assert (scan_enable == 1'b0)
+            $display("PASSED! Releasing down to a single held key is now detected at %0t.", $time);
+        else $error("FAILED! Single remaining key not detected after multi-key release at %0t.", $time);
+
+        cols = 4'b1111; #10; #1;
+
+        // 
+        rows = 4'b1110;
+        cols = 4'b1110;   
+        #1;
         debounced_key = 1;
         #20; #1;
-        assert (d0 == 4'b0001)   // row0/col0 = "1", per number_assign table
+        assert (d0 == 4'b0001)
             $display("PASSED! Key registered in d0 (%0h) at %0t.", d0, $time);
         else $error("FAILED! Expected d0=1, got d0=%0h at %0t.", d0, $time);
 
-        
-        #20;#1;
+        #20; #1;
         assert (d1 == 4'b0000)
             $display("PASSED! HOLD state preventing duplicate key shifts at %0t.", $time);
         else $error("FAILED! Digits shifted unexpectedly during HOLD at %0t.", $time);
 
-        
-        cols = 4'b1111;  // bounce dip
-        #5; #3;
-        assert (scan_enable == 1'b0)
-            $display("PASSED! scan_enable held low through bounce dip at %0t.", $time);
-        else $error("FAILED! scan_enable glitched high during bounce at %0t.", $time);
-        cols = 4'b1110;  // bounce settles back
-        #5;#4;
-        assert (scan_enable == 1'b0)
-            $display("PASSED! scan_enable still low after bounce settles at %0t.", $time);
-        else $error("FAILED! scan_enable incorrect after bounce settle at %0t.", $time);
-
-
         cols          = 4'b1111;
         debounced_key = 0;
-        debounce_idle = 0;   
-        #10; #2; 
-        assert (scan_enable == 1'b0)
-            $display("PASSED! Lock still held mid-release-debounce at %0t.", $time);
-        else $error("FAILED! Lock released too early at %0t.", $time);
+        #20; #1;
 
-        debounce_idle = 1;   
-        #10; #3;
-        assert (scan_enable == 1'b1)
-            $display("PASSED! Key released, scan_enable re-enabled at %0t.", $time);
-        else $error("FAILED! scan_enable did not re-enable after release at %0t.", $time);
-
-        
-        #10; #3;
-        assert (scan_enable == 1'b1)
-            $display("PASSED! No deadlock -- scan_enable stable high at idle at %0t.", $time);
-        else $error("FAILED! key_locked stuck -- deadlock regression at %0t.", $time);
-
-        
-        cols = 4'b1101;   // col 1 active
-        #5;
+        cols = 4'b1101;   
+        #1;
         debounced_key = 1;
-        debounce_idle = 0;
-        #20; #3;
+        #20; #1;
         assert (d1 == 4'b0001 && d0 == 4'b0010)
             $display("PASSED! Digit shift correct (d1=%0h, d0=%0h) at %0t.", d1, d0, $time);
         else $error("FAILED! Expected d1=1,d0=2, got d1=%0h,d0=%0h at %0t.", d1, d0, $time);
 
         #50;
-        #20 $stop;
+        $stop;
     end
 
 endmodule
