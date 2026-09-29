@@ -4,7 +4,7 @@
 #include "STM32L432KC_RCC.h"
 
 void initTIM15(void) {
-    RCC->APB2ENR |= (1 << 16);                 // TIM15EN
+    RCC->APB2ENR |= (1 << 16);                 // enable TIM15
 
     // 80 MHz / (79+1) = 1 MHz tick; 1000 counts = 1 ms
     TIM15->PSC = 79;
@@ -15,12 +15,11 @@ void initTIM15(void) {
     TIM15->CR1 |= (1 << TIM15_CR1_CEN);        // start counter
 }
 
-void delay_millis(TIM15_TypeDef *TIMx, uint32_t ms) {
-    TIMx->SR &= ~(1 << TIM15_SR_UIF);          // clear any stale flag first
+void delay_millis(TIM15_TypeDef *TIMx, uint32_t ms) { //TIMx bc it can be used by TIM15 or TIM16
+    TIMx->SR &= ~(1 << TIM15_SR_UIF);          // clear any flag first
     while (ms-- > 0) {
         while (!(TIMx->SR & (1 << TIM15_SR_UIF)));
         TIMx->SR &= ~(1 << TIM15_SR_UIF);
     }
 }
-
 
